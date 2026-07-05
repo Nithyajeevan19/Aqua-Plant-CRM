@@ -1,22 +1,28 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Water Plant CRM API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: production
+    description: Daily production tracking
+  - name: expenses
+    description: Expense management
+  - name: income
+    description: Income management
+  - name: dashboard
+    description: Dashboard and analytics
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +30,308 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /production:
+    get:
+      operationId: listProduction
+      tags: [production]
+      summary: List daily production records
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+          description: Filter by date (YYYY-MM-DD)
+        - name: month
+          in: query
+          schema:
+            type: string
+          description: Filter by month (YYYY-MM)
+      responses:
+        "200":
+          description: List of production records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductionRecord"
+    post:
+      operationId: createProduction
+      tags: [production]
+      summary: Create a daily production record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductionInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductionRecord"
+
+  /production/{id}:
+    patch:
+      operationId: updateProduction
+      tags: [production]
+      summary: Update a production record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductionUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductionRecord"
+    delete:
+      operationId: deleteProduction
+      tags: [production]
+      summary: Delete a production record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /production/today:
+    get:
+      operationId: getTodayProduction
+      tags: [production]
+      summary: Get today's production summary
+      responses:
+        "200":
+          description: Today's production
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductionRecord"
+
+  /expenses:
+    get:
+      operationId: listExpenses
+      tags: [expenses]
+      summary: List expenses
+      parameters:
+        - name: month
+          in: query
+          schema:
+            type: string
+          description: Filter by month (YYYY-MM)
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of expenses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Expense"
+    post:
+      operationId: createExpense
+      tags: [expenses]
+      summary: Create an expense
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+
+  /expenses/{id}:
+    patch:
+      operationId: updateExpense
+      tags: [expenses]
+      summary: Update an expense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+    delete:
+      operationId: deleteExpense
+      tags: [expenses]
+      summary: Delete an expense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /expenses/summary:
+    get:
+      operationId: getExpenseSummary
+      tags: [expenses]
+      summary: Get expense summary grouped by category
+      parameters:
+        - name: month
+          in: query
+          schema:
+            type: string
+          description: Month filter (YYYY-MM)
+      responses:
+        "200":
+          description: Expense summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseSummary"
+
+  /income:
+    get:
+      operationId: listIncome
+      tags: [income]
+      summary: List income records
+      parameters:
+        - name: month
+          in: query
+          schema:
+            type: string
+          description: Filter by month (YYYY-MM)
+      responses:
+        "200":
+          description: List of income records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IncomeRecord"
+    post:
+      operationId: createIncome
+      tags: [income]
+      summary: Create an income record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncomeInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncomeRecord"
+
+  /income/{id}:
+    patch:
+      operationId: updateIncome
+      tags: [income]
+      summary: Update an income record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncomeUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncomeRecord"
+    delete:
+      operationId: deleteIncome
+      tags: [income]
+      summary: Delete an income record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /dashboard/monthly:
+    get:
+      operationId: getMonthlyDashboard
+      tags: [dashboard]
+      summary: Get monthly revenue and sales dashboard data
+      parameters:
+        - name: months
+          in: query
+          schema:
+            type: integer
+          description: Number of months to include (default 6)
+      responses:
+        "200":
+          description: Monthly dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyDashboard"
+
+  /dashboard/today:
+    get:
+      operationId: getTodayDashboard
+      tags: [dashboard]
+      summary: Get today's combined dashboard summary
+      responses:
+        "200":
+          description: Today's summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodayDashboard"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +342,257 @@ components:
       required:
         - status
 
+    ProductionRecord:
+      type: object
+      required: [id, date, litersFiltered, chemicalMixed, wasteWater, cansFilled, cansDelivered, cansLeft, waterLeft, machineRunningHours, createdAt]
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        litersFiltered:
+          type: number
+        chemicalMixed:
+          type: number
+        wasteWater:
+          type: number
+        cansFilled:
+          type: integer
+        cansDelivered:
+          type: integer
+        cansLeft:
+          type: integer
+        waterLeft:
+          type: number
+        machineRunningHours:
+          type: number
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ProductionInput:
+      type: object
+      required: [date, litersFiltered, chemicalMixed, wasteWater, cansFilled, cansDelivered, machineRunningHours]
+      properties:
+        date:
+          type: string
+        litersFiltered:
+          type: number
+        chemicalMixed:
+          type: number
+        wasteWater:
+          type: number
+        cansFilled:
+          type: integer
+        cansDelivered:
+          type: integer
+        machineRunningHours:
+          type: number
+        notes:
+          type: string
+
+    ProductionUpdate:
+      type: object
+      properties:
+        litersFiltered:
+          type: number
+        chemicalMixed:
+          type: number
+        wasteWater:
+          type: number
+        cansFilled:
+          type: integer
+        cansDelivered:
+          type: integer
+        machineRunningHours:
+          type: number
+        notes:
+          type: string
+
+    Expense:
+      type: object
+      required: [id, date, category, amount, description, createdAt]
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        category:
+          type: string
+        amount:
+          type: number
+        description:
+          type: string
+        createdAt:
+          type: string
+
+    ExpenseInput:
+      type: object
+      required: [date, category, amount, description]
+      properties:
+        date:
+          type: string
+        category:
+          type: string
+        amount:
+          type: number
+        description:
+          type: string
+
+    ExpenseUpdate:
+      type: object
+      properties:
+        date:
+          type: string
+        category:
+          type: string
+        amount:
+          type: number
+        description:
+          type: string
+
+    ExpenseSummary:
+      type: object
+      required: [month, totalExpenses, byCategory]
+      properties:
+        month:
+          type: string
+        totalExpenses:
+          type: number
+        byCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryTotal"
+
+    CategoryTotal:
+      type: object
+      required: [category, total]
+      properties:
+        category:
+          type: string
+        total:
+          type: number
+
+    IncomeRecord:
+      type: object
+      required: [id, date, cashAmount, upiAmount, creditAmount, totalAmount, customerName, liters, createdAt]
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        cashAmount:
+          type: number
+        upiAmount:
+          type: number
+        creditAmount:
+          type: number
+        totalAmount:
+          type: number
+        customerName:
+          type: string
+        liters:
+          type: number
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    IncomeInput:
+      type: object
+      required: [date, cashAmount, upiAmount, creditAmount, customerName, liters]
+      properties:
+        date:
+          type: string
+        cashAmount:
+          type: number
+        upiAmount:
+          type: number
+        creditAmount:
+          type: number
+        customerName:
+          type: string
+        liters:
+          type: number
+        notes:
+          type: string
+
+    IncomeUpdate:
+      type: object
+      properties:
+        date:
+          type: string
+        cashAmount:
+          type: number
+        upiAmount:
+          type: number
+        creditAmount:
+          type: number
+        customerName:
+          type: string
+        liters:
+          type: number
+        notes:
+          type: string
+
+    MonthlyDashboard:
+      type: object
+      required: [months]
+      properties:
+        months:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthlyStats"
+
+    MonthlyStats:
+      type: object
+      required: [month, totalIncome, totalExpenses, netProfit, cashIncome, upiIncome, creditIncome, totalLiters, totalCansDelivered]
+      properties:
+        month:
+          type: string
+        totalIncome:
+          type: number
+        totalExpenses:
+          type: number
+        netProfit:
+          type: number
+        cashIncome:
+          type: number
+        upiIncome:
+          type: number
+        creditIncome:
+          type: number
+        totalLiters:
+          type: number
+        totalCansDelivered:
+          type: integer
+
+    TodayDashboard:
+      type: object
+      required: [date, totalIncome, totalExpenses, netProfit, cashIncome, upiIncome, creditIncome, litersFiltered, cansFilled, cansDelivered, cansLeft, machineRunningHours]
+      properties:
+        date:
+          type: string
+        totalIncome:
+          type: number
+        totalExpenses:
+          type: number
+        netProfit:
+          type: number
+        cashIncome:
+          type: number
+        upiIncome:
+          type: number
+        creditIncome:
+          type: number
+        litersFiltered:
+          type: number
+        cansFilled:
+          type: integer
+        cansDelivered:
+          type: integer
+        cansLeft:
+          type: integer
+        machineRunningHours:
+          type: number
