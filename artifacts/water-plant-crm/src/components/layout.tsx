@@ -1,11 +1,25 @@
 import { useGetTodayDashboard } from "@workspace/api-client-react";
 import { formatCurrency } from "../lib/constants";
-import { Droplet, IndianRupee, TrendingUp, Package } from "lucide-react";
+import { Droplet, IndianRupee, TrendingUp, Package, LogOut, User } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import { format } from "date-fns";
+import { useAuth } from "@/contexts/auth-context";
+import { auth, signOut } from "@/lib/firebase";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export function Header() {
   const { data: today, isLoading } = useGetTodayDashboard();
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+    } catch {
+      toast({ title: "Sign out failed", variant: "destructive" });
+    }
+  };
 
   return (
     <header className="bg-primary text-primary-foreground py-6 px-4 md:px-8">
@@ -19,6 +33,34 @@ export function Header() {
             <p className="text-primary-foreground/80 mt-1">
               Operations Dashboard • {format(new Date(), "EEEE, MMMM do, yyyy")}
             </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {user && (
+              <div className="flex items-center gap-2 bg-primary-foreground/10 rounded-lg px-3 py-2 border border-primary-foreground/20">
+                {user.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt={user.displayName || "User"}
+                    className="w-6 h-6 rounded-full"
+                  />
+                ) : (
+                  <User className="w-4 h-4 text-primary-foreground/80" />
+                )}
+                <span className="text-sm text-primary-foreground/90 hidden md:block">
+                  {user.displayName || user.email}
+                </span>
+              </div>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSignOut}
+              className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10 border border-primary-foreground/20"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign out
+            </Button>
           </div>
         </div>
 
