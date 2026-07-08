@@ -7,8 +7,11 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import LoginPage from "@/pages/login";
 import { Droplet } from "lucide-react";
+import { setBaseUrl } from "@workspace/api-client-react";
 
 const queryClient = new QueryClient();
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim() || "https://aqua-plant-crm.onrender.com";
+setBaseUrl(apiBaseUrl);
 
 function Router() {
   return (
