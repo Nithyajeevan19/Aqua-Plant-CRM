@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export function Header() {
   const { data: today, isLoading } = useGetTodayDashboard();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
@@ -65,30 +65,61 @@ export function Header() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard
-            title="Today's Net Profit"
-            value={isLoading ? null : formatCurrency(today?.netProfit || 0)}
-            icon={<TrendingUp className="w-4 h-4" />}
-            trend={today?.netProfit ? today.netProfit > 0 ? "positive" : "negative" : "neutral"}
-          />
-          <StatCard
-            title="Total Income"
-            value={isLoading ? null : formatCurrency(today?.totalIncome || 0)}
-            icon={<IndianRupee className="w-4 h-4" />}
-            trend="positive"
-          />
-          <StatCard
-            title="Total Expenses"
-            value={isLoading ? null : formatCurrency(today?.totalExpenses || 0)}
-            icon={<IndianRupee className="w-4 h-4" />}
-            trend="negative"
-          />
-          <StatCard
-            title="Cans Delivered"
-            value={isLoading ? null : (today?.cansDelivered || 0).toString()}
-            icon={<Package className="w-4 h-4" />}
-            trend="neutral"
-          />
+          {isAdmin ? (
+            <>
+              <StatCard
+                title="Today's Net Profit"
+                value={isLoading ? null : formatCurrency(today?.netProfit || 0)}
+                icon={<TrendingUp className="w-4 h-4" />}
+                trend={today?.netProfit ? today.netProfit > 0 ? "positive" : "negative" : "neutral"}
+              />
+              <StatCard
+                title="Total Income"
+                value={isLoading ? null : formatCurrency(today?.totalIncome || 0)}
+                icon={<IndianRupee className="w-4 h-4" />}
+                trend="positive"
+              />
+              <StatCard
+                title="Total Expenses"
+                value={isLoading ? null : formatCurrency(today?.totalExpenses || 0)}
+                icon={<IndianRupee className="w-4 h-4" />}
+                trend="negative"
+              />
+              <StatCard
+                title="Cans Delivered"
+                value={isLoading ? null : (today?.cansDelivered || 0).toString()}
+                icon={<Package className="w-4 h-4" />}
+                trend="neutral"
+              />
+            </>
+          ) : (
+            <>
+              <StatCard
+                title="Liters Filtered"
+                value={isLoading ? null : `${today?.litersFiltered || 0} L`}
+                icon={<Droplet className="w-4 h-4" />}
+                trend="neutral"
+              />
+              <StatCard
+                title="Cans Filled"
+                value={isLoading ? null : (today?.cansFilled || 0).toString()}
+                icon={<Package className="w-4 h-4" />}
+                trend="neutral"
+              />
+              <StatCard
+                title="Cans Delivered"
+                value={isLoading ? null : (today?.cansDelivered || 0).toString()}
+                icon={<Package className="w-4 h-4" />}
+                trend="neutral"
+              />
+              <StatCard
+                title="Cans Left"
+                value={isLoading ? null : (today?.cansLeft || 0).toString()}
+                icon={<Package className="w-4 h-4" />}
+                trend="neutral"
+              />
+            </>
+          )}
         </div>
       </div>
     </header>
